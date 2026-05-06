@@ -11,7 +11,7 @@ def get_articles(langue):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT titre, contenu, url, date_publication
+        SELECT id, titre, contenu, url, date_publication
         FROM articles
         WHERE langue = ?
         ORDER BY date_publication DESC
@@ -21,6 +21,7 @@ def get_articles(langue):
     conn.close()
 
     return rows
+
 
 def get_vocab(article_id):
     conn = sqlite3.connect("articles.db")
