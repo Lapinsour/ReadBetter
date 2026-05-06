@@ -1,6 +1,6 @@
 from datetime import date
 from db import get_connection, init_db
-from your_streamlit_file import fetch_article_italian, fetch_article_german
+from scrapers import fetch_article_italian, fetch_article_german
 
 def insert_article(langue, title, url, content):
     conn = get_connection()
