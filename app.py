@@ -37,70 +37,70 @@ def get_vocab(article_id):
     conn.close()
     return rows
 
-def save_stats(user, score):
+def save_stats(st.session_state.user, score):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO stats (user, date, score)
+        INSERT INTO stats (st.session_state.user, date, score)
         VALUES (?, DATE('now'), ?)
-    """, (user, score))
+    """, (st.session_state.user, score))
 
     conn.commit()
     conn.close()
 
 
-def save_dictionary(user, vocab):
+def save_dictionary(st.session_state.user, vocab):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     for mot, trad in vocab:
         cursor.execute("""
-            INSERT INTO dictionnaire (user, date, mot, traduction)
+            INSERT INTO dictionnaire (st.session_state.user, date, mot, traduction)
             VALUES (?, DATE('now'), ?, ?)
-        """, (user, mot, trad))
+        """, (st.session_state.user, mot, trad))
 
     conn.commit()
     conn.close()
 
 
-def get_stats(user):
+def get_stats(st.session_state.user):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT date, score
         FROM stats
-        WHERE user = ?
+        WHERE st.session_state.user = ?
         ORDER BY date DESC
-    """, (user,))
+    """, (st.session_state.user,))
 
     return cursor.fetchall()
 
-def get_dictionary(user):
+def get_dictionary(st.session_state.user):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT mot, traduction
         FROM dictionnaire
-        WHERE user = ?
+        WHERE st.session_state.user = ?
         ORDER BY LOWER(mot) ASC
-    """, (user,))
+    """, (st.session_state.user,))
 
     return cursor.fetchall()
 
-def has_already_done_quiz(user):
+def has_already_done_quiz(st.session_state.user):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT 1
         FROM stats
-        WHERE user = ?
+        WHERE st.session_state.user = ?
         AND date = DATE('now')
         LIMIT 1
-    """, (user,))
+    """, (st.session_state.user,))
 
     result = cursor.fetchone()
     conn.close()
@@ -122,9 +122,11 @@ def translate(text, src, tgt):
         target=tgt
     ).translate(text)
 
-user = st.text_input("Ton nom")
+if "user" not in st.session_state:
+    st.session_state.user = st.text_input("Ton nom")
+    st.stop()
 
-if user:
+if st.session_state.user:
     # -----------------------------
     # Init session state
     # -----------------------------
@@ -146,12 +148,17 @@ if user:
         "Navigation",
         ["Lecture", "Quiz", "Dictionnaire", "Progression"]
     )
+    st.sidebar.markdown(f"👤 **{st.session_state.user}**")
+    
+    if st.sidebar.button("🚪 Changer d'utilisateur"):
+        del st.session_state.user
+        st.rerun()
     
     if menu == "Progression":
     
         st.subheader("📈 Progression")
     
-        stats = get_stats(user)
+        stats = get_stats(st.session_state.user)
     
         for d, s in stats:
             st.write(f"{d} → {s}/10")
@@ -159,7 +166,7 @@ if user:
     if menu == "Dictionnaire":
         
         st.subheader("📖 Dictionnaire")
-        dict_data = get_dictionary(user)     
+        dict_data = get_dictionary(st.session_state.user)     
         
         
         for mot, trad in dict_data:
@@ -237,7 +244,7 @@ if user:
     if menu == "Quiz":
         st.subheader("📚 Vocabulaire du jour")
     
-        if has_already_done_quiz(user):
+        if has_already_done_quiz(st.session_state.user):
             st.info("✔️ Quiz déjà complété aujourd’hui.")
             st.stop()
     
@@ -255,12 +262,12 @@ if user:
             score = 0
     
             for i, (mot, trad) in enumerate(vocab):
-                user_input = st.session_state.get(f"vocab_{i}", "")
+                st.session_state.user_input = st.session_state.get(f"vocab_{i}", "")
     
-                if user_input.strip().lower() == trad.strip().lower():
+                if st.session_state.user_input.strip().lower() == trad.strip().lower():
                     score += 1
     
             st.success(f"Score : {score}/10")
     
-            save_stats(user, score)
-            save_dictionary(user, vocab)
+            save_stats(st.session_state.user, score)
+            save_dictionary(st.session_state.user, vocab)
