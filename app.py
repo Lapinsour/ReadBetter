@@ -82,9 +82,10 @@ def get_dictionary(user):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT mot, traduction, date
+        SELECT mot, traduction
         FROM dictionnaire
         WHERE user = ?
+        ORDER BY LOWER(mot) ASC
     """, (user,))
 
     return cursor.fetchall()
@@ -155,8 +156,8 @@ if menu == "Dictionnaire":
     
     dict_data = get_dictionary("user1")
     
-    for mot, trad, date in dict_data:
-        st.write(f"{mot} → {trad} ({date})")
+    for mot, trad in dict_data:
+        st.write(f"{mot} : {trad}")
 
 if menu == "Lecture":
     st.title("🌍 Entraînement multilingue")
