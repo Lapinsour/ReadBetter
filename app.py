@@ -37,12 +37,12 @@ def get_vocab(article_id):
     conn.close()
     return rows
 
-def save_stats(st.session_state.user, score):
+def save_stats(user, score):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO stats (st.session_state.user, date, score)
+        INSERT INTO stats (user, date, score)
         VALUES (?, DATE('now'), ?)
     """, (st.session_state.user, score))
 
@@ -50,13 +50,13 @@ def save_stats(st.session_state.user, score):
     conn.close()
 
 
-def save_dictionary(st.session_state.user, vocab):
+def save_dictionary(user, vocab):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     for mot, trad in vocab:
         cursor.execute("""
-            INSERT INTO dictionnaire (st.session_state.user, date, mot, traduction)
+            INSERT INTO dictionnaire (user, date, mot, traduction)
             VALUES (?, DATE('now'), ?, ?)
         """, (st.session_state.user, mot, trad))
 
@@ -64,43 +64,43 @@ def save_dictionary(st.session_state.user, vocab):
     conn.close()
 
 
-def get_stats(st.session_state.user):
+def get_stats(user):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT date, score
         FROM stats
-        WHERE st.session_state.user = ?
+        WHERE user = ?
         ORDER BY date DESC
-    """, (st.session_state.user,))
+    """, (user,))
 
     return cursor.fetchall()
 
-def get_dictionary(st.session_state.user):
+def get_dictionary(user):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT mot, traduction
         FROM dictionnaire
-        WHERE st.session_state.user = ?
+        WHERE user = ?
         ORDER BY LOWER(mot) ASC
-    """, (st.session_state.user,))
+    """, (user,))
 
     return cursor.fetchall()
 
-def has_already_done_quiz(st.session_state.user):
+def has_already_done_quiz(user):
     conn = sqlite3.connect("articles.db")
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT 1
         FROM stats
-        WHERE st.session_state.user = ?
+        WHERE user = ?
         AND date = DATE('now')
         LIMIT 1
-    """, (st.session_state.user,))
+    """, (user,))
 
     result = cursor.fetchone()
     conn.close()
