@@ -37,6 +37,33 @@ def get_vocab(article_id):
     conn.close()
     return rows
 
+def save_stats(user, score):
+    conn = sqlite3.connect("articles.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO stats (user, date, score)
+        VALUES (?, DATE('now'), ?)
+    """, (user, score))
+
+    conn.commit()
+    conn.close()
+
+
+def save_dictionary(user, vocab):
+    conn = sqlite3.connect("articles.db")
+    cursor = conn.cursor()
+
+    for mot, trad in vocab:
+        cursor.execute("""
+            INSERT INTO dictionnaire (user, date, mot, traduction)
+            VALUES (?, DATE('now'), ?, ?)
+        """, (user, mot, trad))
+
+    conn.commit()
+    conn.close()
+
+
 # -----------------------------
 # Utils
 # -----------------------------
@@ -145,3 +172,5 @@ for i, (mot, trad) in enumerate(vocab):
 
 if st.button("Valider le quiz"):
     st.success(f"Score : {score}/10")
+    save_stats("user1", score)
+    save_dictionary("user1", vocab)
