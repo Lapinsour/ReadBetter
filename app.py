@@ -50,7 +50,7 @@ if "sentences" not in st.session_state:
 # -----------------------------
 st.title("🌍 Entraînement multilingue")
 
-langue = st.selectbox("Langue", ["it", "de"])
+langue = st.selectbox("Langue", ["Italien", "Allemand"])
 jour = st.selectbox("Article", ["Aujourd'hui", "Hier"])
 
 articles = get_articles(langue)
