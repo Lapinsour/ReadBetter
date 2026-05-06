@@ -89,6 +89,23 @@ def get_dictionary(user):
 
     return cursor.fetchall()
 
+def has_already_done_quiz(user):
+    conn = sqlite3.connect("articles.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 1
+        FROM stats
+        WHERE user = ?
+        AND date = DATE('now')
+        LIMIT 1
+    """, (user,))
+
+    result = cursor.fetchone()
+    conn.close()
+
+    return result is not None
+
 
 # -----------------------------
 # Utils
@@ -207,6 +224,9 @@ if menu == "Lecture":
 
 if menu == "Quiz":
     st.subheader("📚 Vocabulaire du jour")
+    if has_already_done_quiz("user1"):
+        st.info("✔️ Quiz déjà complété aujourd’hui. Tu peux consulter ton score dans Progression.")
+        st.stop()
     
     score = 0
     answers = {}
