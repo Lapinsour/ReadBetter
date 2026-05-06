@@ -32,7 +32,10 @@ def split_into_sentences(text):
 
 @st.cache_data
 def translate(text, src, tgt):
-    return GoogleTranslator(source=src, target=tgt).translate(text)
+    return GoogleTranslator(
+        source="auto",
+        target="french"
+    ).translate(text)
 
 
 # -----------------------------
