@@ -248,32 +248,32 @@ if st.session_state.user:
     
     if menu == "Quiz":
 
-    st.subheader("📚 Vocabulaire du jour")
-
-    if has_already_done_quiz(st.session_state.user):
-        st.info("✔️ Quiz déjà complété aujourd’hui.")
-        st.stop()
-
-    vocab = st.session_state.get("vocab", [])
-
-    if not vocab:
-        st.warning("Aucun vocabulaire chargé.")
-        st.stop()
-
-    for i, (mot, trad) in enumerate(vocab):
-        st.text_input(f"Traduire : {mot}", key=f"vocab_{i}")
-
-    if st.button("Valider le quiz"):
-
-        score = 0
-
+        st.subheader("📚 Vocabulaire du jour")
+    
+        if has_already_done_quiz(st.session_state.user):
+            st.info("✔️ Quiz déjà complété aujourd’hui.")
+            st.stop()
+    
+        vocab = st.session_state.get("vocab", [])
+    
+        if not vocab:
+            st.warning("Aucun vocabulaire chargé.")
+            st.stop()
+    
         for i, (mot, trad) in enumerate(vocab):
-            user_input = st.session_state.get(f"vocab_{i}", "")
-
-            if user_input.strip().lower() == trad.strip().lower():
-                score += 1
-
-        st.success(f"Score : {score}/10")
-
-        save_stats(st.session_state.user, score)
-        save_dictionary(st.session_state.user, vocab)
+            st.text_input(f"Traduire : {mot}", key=f"vocab_{i}")
+    
+        if st.button("Valider le quiz"):
+    
+            score = 0
+    
+            for i, (mot, trad) in enumerate(vocab):
+                user_input = st.session_state.get(f"vocab_{i}", "")
+    
+                if user_input.strip().lower() == trad.strip().lower():
+                    score += 1
+    
+            st.success(f"Score : {score}/10")
+    
+            save_stats(st.session_state.user, score)
+            save_dictionary(st.session_state.user, vocab)
