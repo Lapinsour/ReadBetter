@@ -153,7 +153,7 @@ if menu == "Progression":
 if menu == "Dictionnaire":
     
     st.subheader("📖 Dictionnaire")
-
+    dict_data = get_dictionary("user1")
     search = st.text_input("Rechercher un mot")
     
     filtered = [
@@ -161,7 +161,7 @@ if menu == "Dictionnaire":
         if search.lower() in m.lower()
     ] if search else dict_data
     
-    dict_data = get_dictionary("user1")
+    
     
     for mot, trad in dict_data:
         st.write(f"{mot} : {trad}")
