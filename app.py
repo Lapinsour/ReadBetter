@@ -187,7 +187,7 @@ if st.session_state.user:
         
         langue = LANGUE_MAP[langue_label]
         jour = st.selectbox("Article", ["Aujourd'hui", "Hier"])
-        st.session_state.vocab = get_vocab(article_id)
+        
         articles = get_articles(langue)
         
         # mapping langue
@@ -205,7 +205,7 @@ if st.session_state.user:
             if len(articles) > idx:
         
                 article_id, title, content, url, date_pub = articles[idx]
-        
+                st.session_state.vocab = get_vocab(article_id)
                 st.header(title)
                 st.markdown(f"[Lire l'article]({url})")
                 if st.button("🧹 Masquer toutes les traductions"):
