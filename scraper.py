@@ -38,7 +38,7 @@ def cleanup():
 
     cursor.execute("""
         DELETE FROM articles
-        WHERE date_publication < DATE('now', '-1 day')
+        WHERE date_publication < DATE('now', '-2 day')
     """)
 
     conn.commit()
@@ -80,6 +80,7 @@ def insert_vocab(article_id, vocab_list):
 
     conn.commit()
     conn.close()
+
 
 
 # -----------------------------
