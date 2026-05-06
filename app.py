@@ -76,6 +76,8 @@ if articles:
 
         st.header(title)
         st.markdown(f"[Lire l'article]({url})")
+        if st.button("🧹 Masquer toutes les traductions"):
+           st.session_state.trans = {}
 
         sentences = split_into_sentences(content)
         st.session_state.sentences = sentences
