@@ -151,7 +151,7 @@ if user:
     
         st.subheader("📈 Progression")
     
-        stats = get_stats("user")
+        stats = get_stats(user)
     
         for d, s in stats:
             st.write(f"{d} → {s}/10")
@@ -159,7 +159,7 @@ if user:
     if menu == "Dictionnaire":
         
         st.subheader("📖 Dictionnaire")
-        dict_data = get_dictionary("user")     
+        dict_data = get_dictionary(user)     
         
         
         for mot, trad in dict_data:
@@ -236,7 +236,7 @@ if user:
     
     if menu == "Quiz":
         st.subheader("📚 Vocabulaire du jour")
-        if has_already_done_quiz("user"):
+        if has_already_done_quiz(user):
             st.info("✔️ Quiz déjà complété aujourd’hui. Tu peux consulter ton score dans Progression.")
             st.stop()        
         
@@ -245,16 +245,7 @@ if user:
         if not vocab:
             st.warning("Aucun vocabulaire chargé.")
             st.stop()
-                
-        for i, (mot, trad) in enumerate(vocab):
-        
-            user_input = st.text_input(f"Traduire : {mot}", key=f"vocab_{i}")
-        
-            answers[mot] = (user_input, trad)
-        
-            if user_input.strip().lower() == trad.strip().lower():
-                score += 1
-        
+            
         if st.button("Valider le quiz"):
     
             score = 0
@@ -267,5 +258,5 @@ if user:
         
             st.success(f"Score : {score}/10")
         
-            save_stats("user", score)
-            save_dictionary("user", vocab)
+            save_stats(user, score)
+            save_dictionary(user, vocab)
