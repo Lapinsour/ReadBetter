@@ -153,6 +153,13 @@ if menu == "Progression":
 if menu == "Dictionnaire":
     
     st.subheader("📖 Dictionnaire")
+
+    search = st.text_input("Rechercher un mot")
+    
+    filtered = [
+        (m, t) for m, t in dict_data
+        if search.lower() in m.lower()
+    ] if search else dict_data
     
     dict_data = get_dictionary("user1")
     
