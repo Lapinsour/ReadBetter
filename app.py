@@ -22,6 +22,19 @@ def get_articles(langue):
 
     return rows
 
+def get_vocab(article_id):
+    conn = sqlite3.connect("articles.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT mot, traduction
+        FROM vocabulaire
+        WHERE article_id = ?
+    """, (article_id,))
+
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
 
 # -----------------------------
 # Utils
@@ -112,3 +125,22 @@ if articles:
 
 else:
     st.warning("Aucun article disponible dans la base.")
+
+st.subheader("📚 Vocabulaire du jour")
+
+score = 0
+answers = {}
+
+vocab = get_vocab(article_id)
+
+for i, (mot, trad) in enumerate(vocab):
+
+    user_input = st.text_input(f"Traduire : {mot}", key=f"vocab_{i}")
+
+    answers[mot] = (user_input, trad)
+
+    if user_input.strip().lower() == trad.strip().lower():
+        score += 1
+
+if st.button("Valider le quiz"):
+    st.success(f"Score : {score}/10")
