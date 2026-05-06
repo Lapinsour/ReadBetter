@@ -86,25 +86,24 @@ if articles:
 
         for i, s in enumerate(sentences):
 
-            col1, col2 = st.columns([0.9, 0.1])
-
-            with col1:
-                st.write(s)
-
-            with col2:
-                if st.button("🌍", key=f"btn_{langue}_{jour}_{i}"):
-
-                    if i not in st.session_state.trans:
-                        st.session_state.trans[i] = translate(
-                            s,
-                            st.session_state.src,
-                            st.session_state.tgt
-                        )
-                    else:
-                        del st.session_state.trans[i]
-
+            key = f"{langue}_{jour}_{i}"
+        
+            if st.button(s, key=key):
+        
+                if i not in st.session_state.trans:
+                    st.session_state.trans[i] = translate(
+                        s,
+                        st.session_state.src,
+                        st.session_state.tgt
+                    )
+                else:
+                    del st.session_state.trans[i]
+        
             if i in st.session_state.trans:
-                st.success(st.session_state.trans[i])
+                st.markdown(
+                    f"<div style='color:green; margin-left:10px;'>{st.session_state.trans[i]}</div>",
+                    unsafe_allow_html=True
+                )
 
 else:
     st.warning("Aucun article disponible dans la base.")
