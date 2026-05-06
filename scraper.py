@@ -1,24 +1,37 @@
 from datetime import date
-from db import get_connection, init_db
-from scrapers import fetch_article_italian, fetch_article_german
+import sqlite3
 import random
 import re
 from collections import Counter
+
+from db import get_connection, init_db
+from scrapers import fetch_article_italian, fetch_article_german
 from deep_translator import GoogleTranslator
 
+
+# -----------------------------
+# ARTICLES
+# -----------------------------
 def insert_article(langue, title, url, content):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT OR IGNORE INTO articles
-        (langue, titre, contenu, url, date_publication)
+        INSERT INTO articles (langue, titre, contenu, url, date_publication)
         VALUES (?, ?, ?, ?, ?)
     """, (langue, title, content, url, date.today()))
+
+    article_id = cursor.lastrowid
 
     conn.commit()
     conn.close()
 
+    return article_id
+
+
+# -----------------------------
+# CLEANUP
+# -----------------------------
 def cleanup():
     conn = get_connection()
     cursor = conn.cursor()
@@ -32,6 +45,9 @@ def cleanup():
     conn.close()
 
 
+# -----------------------------
+# VOCAB EXTRACTION
+# -----------------------------
 def extract_keywords(text, n=10):
     words = re.findall(r"\b[a-zA-ZÀ-ÿ]{4,}\b", text.lower())
 
@@ -43,10 +59,17 @@ def extract_keywords(text, n=10):
 
 
 def translate_words(words, src, tgt):
-    return [(w, GoogleTranslator(source=src, target=tgt).translate(w)) for w in words]
+    return [
+        (w, GoogleTranslator(source=src, target=tgt).translate(w))
+        for w in words
+    ]
 
+
+# -----------------------------
+# VOCAB INSERT
+# -----------------------------
 def insert_vocab(article_id, vocab_list):
-    conn = sqlite3.connect("articles.db")
+    conn = get_connection()
     cursor = conn.cursor()
 
     for mot, trad in vocab_list:
@@ -58,23 +81,33 @@ def insert_vocab(article_id, vocab_list):
     conn.commit()
     conn.close()
 
+
+# -----------------------------
+# MAIN PIPELINE
+# -----------------------------
 if __name__ == "__main__":
     init_db()
 
+    # ---------------- ITALIEN ----------------
     it_title, it_url, it_content = fetch_article_italian()
-    de_title, de_url, de_content = fetch_article_german()
 
     if it_content:
-        insert_article("Italien", it_title, it_url, it_content)
-        
+        it_article_id = insert_article("it", it_title, it_url, it_content)
+
+        words = extract_keywords(it_content)
+        vocab = translate_words(words, "it", "fr")
+        insert_vocab(it_article_id, vocab)
+
+
+    # ---------------- ALLEMAND ----------------
+    de_title, de_url, de_content = fetch_article_german()
 
     if de_content:
-        insert_article("Allemand", de_title, de_url, de_content)
+        de_article_id = insert_article("de", de_title, de_url, de_content)
 
-    words = extract_keywords(content)
-    vocab = translate_words(words, "it", "fr")
-    insert_vocab(article_id, vocab)
+        words = extract_keywords(de_content)
+        vocab = translate_words(words, "de", "fr")
+        insert_vocab(de_article_id, vocab)
 
-    
 
     cleanup()
