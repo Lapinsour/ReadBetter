@@ -123,8 +123,13 @@ def translate(text, src, tgt):
     ).translate(text)
 
 if "user" not in st.session_state:
-    st.session_state.user = st.text_input("Ton nom")
-    st.stop()
+    user_input = st.text_input("Ton nom")
+
+    if not user_input:
+        st.stop()
+
+    st.session_state.user = user_input
+    st.rerun()
 
 if st.session_state.user:
     # -----------------------------
@@ -262,7 +267,7 @@ if st.session_state.user:
             score = 0
     
             for i, (mot, trad) in enumerate(vocab):
-                st.session_state.user_input = st.session_state.get(f"vocab_{i}", "")
+                user_input = st.session_state.get(f"vocab_{i}", "")
     
                 if st.session_state.user_input.strip().lower() == trad.strip().lower():
                     score += 1
