@@ -100,8 +100,8 @@ def split_into_sentences(text):
 @st.cache_data
 def translate(text, src, tgt):
     return GoogleTranslator(
-        source="auto",
-        target="french"
+        source=src,
+        target=tgt
     ).translate(text)
 
 
@@ -174,7 +174,8 @@ if menu == "Lecture":
             st.session_state.sentences = sentences
             st.session_state.src = src
             st.session_state.tgt = tgt
-    
+            st.session_state.article_id = article_id
+            st.session_state.vocab = get_vocab(article_id)
             # -----------------------------
             # Affichage phrases
             # -----------------------------
@@ -210,7 +211,11 @@ if menu == "Quiz":
     score = 0
     answers = {}
     
-    vocab = get_vocab(article_id)
+    if "article_id" in st.session_state:
+        vocab = get_vocab(st.session_state.article_id)
+    else:
+        st.warning("Aucun article sélectionné.")
+        st.stop()
     
     for i, (mot, trad) in enumerate(vocab):
     
