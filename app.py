@@ -64,6 +64,32 @@ def save_dictionary(user, vocab):
     conn.close()
 
 
+def get_stats(user):
+    conn = sqlite3.connect("articles.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT date, score
+        FROM stats
+        WHERE user = ?
+        ORDER BY date DESC
+    """, (user,))
+
+    return cursor.fetchall()
+
+def get_dictionary(user):
+    conn = sqlite3.connect("articles.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT mot, traduction, date
+        FROM dictionnaire
+        WHERE user = ?
+    """, (user,))
+
+    return cursor.fetchall()
+
+
 # -----------------------------
 # Utils
 # -----------------------------
@@ -92,6 +118,28 @@ if "sentences" not in st.session_state:
 # -----------------------------
 # UI
 # -----------------------------
+menu = st.sidebar.selectbox(
+    "Navigation",
+    ["Lecture", "Quiz", "Progression"]
+)
+
+if menu == "Progression":
+
+    st.subheader("📈 Progression")
+
+    stats = get_stats("user1")
+
+    for d, s in stats:
+        st.write(f"{d} → {s}/10")
+
+
+st.subheader("📖 Dictionnaire")
+
+dict_data = get_dictionary("user1")
+
+for mot, trad, date in dict_data:
+    st.write(f"{mot} → {trad} ({date})")
+
 st.title("🌍 Entraînement multilingue")
 
 langue = st.selectbox("Langue", ["it", "de"])
