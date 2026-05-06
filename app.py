@@ -227,6 +227,16 @@ if menu == "Quiz":
             score += 1
     
     if st.button("Valider le quiz"):
+
+        score = 0
+    
+        for i, (mot, trad) in enumerate(vocab):
+            user_input = st.session_state.get(f"vocab_{i}", "")
+    
+            if user_input.strip().lower() == trad.strip().lower():
+                score += 1
+    
         st.success(f"Score : {score}/10")
+    
         save_stats("user1", score)
         save_dictionary("user1", vocab)
