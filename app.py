@@ -86,7 +86,7 @@ if articles:
 
     if len(articles) > idx:
 
-        title, content, url, date_pub = articles[idx]
+        article_id, title, content, url, date_pub = articles[idx]
 
         st.header(title)
         st.markdown(f"[Lire l'article]({url})")
