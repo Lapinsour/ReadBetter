@@ -34,9 +34,9 @@ if __name__ == "__main__":
     de_title, de_url, de_content = fetch_article_german()
 
     if it_content:
-        insert_article("it", it_title, it_url, it_content)
+        insert_article("Italien", it_title, it_url, it_content)
 
     if de_content:
-        insert_article("de", de_title, de_url, de_content)
+        insert_article("Allemand", de_title, de_url, de_content)
 
     cleanup()
