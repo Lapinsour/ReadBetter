@@ -132,6 +132,10 @@ if "trans" not in st.session_state:
 if "sentences" not in st.session_state:
     st.session_state.sentences = []
 
+LANGUE_MAP = {
+    "Italien": "it",
+    "Allemand": "de"
+}
 
 # -----------------------------
 # UI
@@ -162,7 +166,12 @@ if menu == "Dictionnaire":
 if menu == "Lecture":
     st.title("🌍 Entraînement multilingue")
     
-    langue = st.selectbox("Langue", ["it", "de"])
+    langue_label = st.selectbox(
+        "Langue",
+        ["Italien", "Allemand"]
+    )
+    
+    langue = LANGUE_MAP[langue_label]
     jour = st.selectbox("Article", ["Aujourd'hui", "Hier"])
     
     articles = get_articles(langue)
