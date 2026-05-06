@@ -178,7 +178,7 @@ if st.session_state.user:
             st.write(f"{mot} : {trad}")
     
     if menu == "Lecture":
-        st.title("🌍 Entraînement multilingue")
+        st.title("ReadBetter")
         
         langue_label = st.selectbox(
             "Langue",
