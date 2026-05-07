@@ -60,7 +60,7 @@ def save_dictionary(username, vocab):
         cursor.execute("""
             INSERT INTO dictionnaire (username, date, mot, traduction)
             VALUES (%s, CURRENT_DATE, %s, %s)
-        """, (st.session_state.username, mot, trad))
+        """, (username, mot, trad))
 
     conn.commit()
     conn.close()
@@ -205,6 +205,7 @@ if st.session_state.username:
         
                 article_id, title, content, url, date_pub = articles[idx]
                 st.session_state.vocab = get_vocab(article_id)
+                st.session_state.langue = langue
                 st.header(title)
                 st.markdown(f"[Lire l'article]({url})")
                 if st.button("🧹 Masquer toutes les traductions"):
@@ -216,6 +217,8 @@ if st.session_state.username:
                 st.session_state.tgt = tgt
                 if st.button("Charger article"):
                     st.session_state.vocab = get_vocab(article_id)
+                    st.session_state.langue = langue
+                    
                 # -----------------------------
                 # Affichage phrases
                 # -----------------------------
@@ -248,11 +251,11 @@ if st.session_state.username:
     if menu == "Quiz":
 
         st.subheader("📚 Vocabulaire du jour")
-
-        langue = st.session_state.get("langue", None)
-
+    
+        langue = st.session_state.get("langue")
+    
         if not langue:
-            st.warning("Sélectionne un article d'abord.")
+            st.warning("Sélectionne d'abord un article.")
             st.stop()
     
         if has_already_done_quiz(st.session_state.username, langue):
@@ -273,9 +276,9 @@ if st.session_state.username:
             score = 0
     
             for i, (mot, trad) in enumerate(vocab):
-                username_input = st.session_state.get(f"vocab_{i}", "")
+                user_input = st.session_state.get(f"vocab_{i}", "")
     
-                if username_input.strip().lower() == trad.strip().lower():
+                if user_input.strip().lower() == trad.strip().lower():
                     score += 1
     
             st.success(f"Score : {score}/10")
