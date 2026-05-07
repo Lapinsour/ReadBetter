@@ -215,9 +215,7 @@ if st.session_state.username:
                 st.session_state.sentences = sentences
                 st.session_state.src = src
                 st.session_state.tgt = tgt
-                if st.button("Charger article"):
-                    st.session_state.vocab = get_vocab(article_id)
-                    st.session_state.langue = langue
+                
                     
                 # -----------------------------
                 # Affichage phrases
