@@ -73,7 +73,7 @@ def get_stats(username):
     cursor.execute("""
         SELECT date, score
         FROM stats
-        WHERE usernamename = %s
+        WHERE username = %s
         ORDER BY date DESC
     """, (username,))
 
@@ -86,7 +86,7 @@ def get_dictionary(username):
     cursor.execute("""
         SELECT mot, traduction
         FROM dictionnaire
-        WHERE usernamename = %s
+        WHERE username = %s
         ORDER BY LOWER(mot) ASC
     """, (username,))
 
