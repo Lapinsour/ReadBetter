@@ -68,9 +68,11 @@ def init_db():
         CREATE TABLE IF NOT EXISTS dictionnaire (
             id SERIAL PRIMARY KEY,
             username TEXT,
+            langue TEXT,
             date DATE,
             mot TEXT,
-            traduction TEXT
+            traduction TEXT,
+            UNIQUE(username, langue, mot)
         )
     """)
 
