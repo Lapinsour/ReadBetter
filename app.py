@@ -39,70 +39,70 @@ def get_vocab(article_id):
     conn.close()
     return rows
 
-def save_stats(user, score):
+def save_stats(username, score):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO stats (user, date, score)
+        INSERT INTO stats (username, date, score)
         VALUES (?, DATE('now'), ?)
-    """, (st.session_state.user, score))
+    """, (st.session_state.username, score))
 
     conn.commit()
     conn.close()
 
 
-def save_dictionary(user, vocab):
+def save_dictionary(username, vocab):
     conn = get_connection()
     cursor = conn.cursor()
 
     for mot, trad in vocab:
         cursor.execute("""
-            INSERT INTO dictionnaire (user, date, mot, traduction)
+            INSERT INTO dictionnaire (username, date, mot, traduction)
             VALUES (?, DATE('now'), ?, ?)
-        """, (st.session_state.user, mot, trad))
+        """, (st.session_state.username, mot, trad))
 
     conn.commit()
     conn.close()
 
 
-def get_stats(user):
+def get_stats(username):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT date, score
         FROM stats
-        WHERE username = %s
+        WHERE usernamename = %s
         ORDER BY date DESC
-    """, (user,))
+    """, (username,))
 
     return cursor.fetchall()
 
-def get_dictionary(user):
+def get_dictionary(username):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT mot, traduction
         FROM dictionnaire
-        WHERE username = %s
+        WHERE usernamename = %s
         ORDER BY LOWER(mot) ASC
-    """, (user,))
+    """, (username,))
 
     return cursor.fetchall()
 
-def has_already_done_quiz(user):
+def has_already_done_quiz(username):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT 1
         FROM stats
-        WHERE username = %s
+        WHERE usernamename = %s
         AND date = DATE('now')
         LIMIT 1
-    """, (user,))
+    """, (username,))
 
     result = cursor.fetchone()
     conn.close()
@@ -124,16 +124,16 @@ def translate(text, src, tgt):
         target=tgt
     ).translate(text)
 
-if "user" not in st.session_state:
-    user_input = st.text_input("Ton nom")
+if "username" not in st.session_state:
+    username_input = st.text_input("Ton nom")
 
-    if not user_input:
+    if not username_input:
         st.stop()
 
-    st.session_state.user = user_input
+    st.session_state.username = username_input
     st.rerun()
 
-if st.session_state.user:
+if st.session_state.username:
     # -----------------------------
     # Init session state
     # -----------------------------
@@ -155,17 +155,17 @@ if st.session_state.user:
         "Navigation",
         ["Lecture", "Quiz", "Dictionnaire", "Progression"]
     )
-    st.sidebar.markdown(f"👤 **{st.session_state.user}**")
+    st.sidebar.markdown(f"👤 **{st.session_state.username}**")
     
     if st.sidebar.button("🚪 Changer d'utilisateur"):
-        del st.session_state.user
+        del st.session_state.username
         st.rerun()
     
     if menu == "Progression":
     
         st.subheader("📈 Progression")
     
-        stats = get_stats(st.session_state.user)
+        stats = get_stats(st.session_state.username)
     
         for d, s in stats:
             st.write(f"{d} → {s}/10")
@@ -173,7 +173,7 @@ if st.session_state.user:
     if menu == "Dictionnaire":
         
         st.subheader("📖 Dictionnaire")
-        dict_data = get_dictionary(st.session_state.user)     
+        dict_data = get_dictionary(st.session_state.username)     
         
         
         for mot, trad in dict_data:
@@ -252,7 +252,7 @@ if st.session_state.user:
 
         st.subheader("📚 Vocabulaire du jour")
     
-        if has_already_done_quiz(st.session_state.user):
+        if has_already_done_quiz(st.session_state.username):
             st.info("✔️ Quiz déjà complété aujourd’hui.")
             st.stop()
     
@@ -270,12 +270,12 @@ if st.session_state.user:
             score = 0
     
             for i, (mot, trad) in enumerate(vocab):
-                user_input = st.session_state.get(f"vocab_{i}", "")
+                username_input = st.session_state.get(f"vocab_{i}", "")
     
-                if user_input.strip().lower() == trad.strip().lower():
+                if username_input.strip().lower() == trad.strip().lower():
                     score += 1
     
             st.success(f"Score : {score}/10")
     
-            save_stats(st.session_state.user, score)
-            save_dictionary(st.session_state.user, vocab)
+            save_stats(st.session_state.username, score)
+            save_dictionary(st.session_state.username, vocab)
