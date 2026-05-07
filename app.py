@@ -15,7 +15,7 @@ def get_articles(langue):
     cursor.execute("""
         SELECT id, titre, contenu, url, date_publication
         FROM articles
-        WHERE langue = ?
+        WHERE langue = %s
         ORDER BY date_publication DESC
     """, (langue,))
 
@@ -32,7 +32,7 @@ def get_vocab(article_id):
     cursor.execute("""
         SELECT mot, traduction
         FROM vocabulaire
-        WHERE article_id = ?
+        WHERE article_id = %s
     """, (article_id,))
 
     rows = cursor.fetchall()
@@ -45,7 +45,7 @@ def save_stats(username, score):
 
     cursor.execute("""
         INSERT INTO stats (username, date, score)
-        VALUES (?, DATE('now'), ?)
+        VALUES (%s, DATE('now'), %s)
     """, (st.session_state.username, score))
 
     conn.commit()
@@ -59,7 +59,7 @@ def save_dictionary(username, vocab):
     for mot, trad in vocab:
         cursor.execute("""
             INSERT INTO dictionnaire (username, date, mot, traduction)
-            VALUES (?, DATE('now'), ?, ?)
+            VALUES (%s, DATE('now'), %s, %s)
         """, (st.session_state.username, mot, trad))
 
     conn.commit()
