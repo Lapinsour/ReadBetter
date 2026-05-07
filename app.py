@@ -249,7 +249,7 @@ if st.session_state.username:
 
         st.subheader("📚 Vocabulaire du jour")
     
-        if has_already_done_quiz(st.session_state.username):
+        if has_already_done_quiz(st.session_state.username, langue):
             st.info("✔️ Quiz déjà complété aujourd’hui.")
             st.stop()
     
