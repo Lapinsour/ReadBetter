@@ -58,7 +58,8 @@ def init_db():
             id SERIAL PRIMARY KEY,
             username TEXT,
             date DATE,
-            score INTEGER
+            score INTEGER,
+            langue TEXT
         )
     """)
 
