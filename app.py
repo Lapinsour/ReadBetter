@@ -52,45 +52,50 @@ def save_stats(username, langue, score):
     conn.close()
 
 
-def save_dictionary(username, vocab):
+def save_dictionary(username, langue, vocab):
     conn = get_connection()
     cursor = conn.cursor()
 
     for mot, trad in vocab:
         cursor.execute("""
-            INSERT INTO dictionnaire (username, date, mot, traduction)
-            VALUES (%s, CURRENT_DATE, %s, %s)
-        """, (username, mot, trad))
+            INSERT INTO dictionnaire (username, langue, date, mot, traduction)
+            VALUES (%s, %s, CURRENT_DATE, %s, %s)
+            ON CONFLICT (username, langue, mot) DO NOTHING
+        """, (username, langue, mot, trad))
 
     conn.commit()
     conn.close()
 
 
-def get_stats(username):
+def get_stats(username, langue):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT date, score
         FROM stats
-        WHERE username = %s
+        WHERE username = %s AND langue = %s
         ORDER BY date DESC
-    """, (username,))
+    """, (username, langue))
 
     return cursor.fetchall()
 
-def get_dictionary(username):
+    return cursor.fetchall()
+
+def get_dictionary(username, langue):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT mot, traduction
         FROM dictionnaire
-        WHERE username = %s
+        WHERE username = %s AND langue = %s
         ORDER BY LOWER(mot) ASC
-    """, (username,))
+    """, (username, langue))
 
-    return cursor.fetchall()
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
 
 def has_already_done_quiz(username, langue):
     conn = get_connection()
@@ -160,21 +165,35 @@ if st.session_state.username:
     
     if menu == "Progression":
     
-        st.subheader("📈 Progression")
-    
-        stats = get_stats(st.session_state.username)
-    
-        for d, s in stats:
-            st.write(f"{d} → {s}/10")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("### 🇮🇹 Italien")
+            stats_it = get_stats(st.session_state.username, "it")
+            for d, s in stats_it:
+                st.write(f"{d} → {s}/10")
+        
+        with col2:
+            st.markdown("### 🇩🇪 Allemand")
+            stats_de = get_stats(st.session_state.username, "de")
+            for d, s in stats_de:
+                st.write(f"{d} → {s}/10")
     
     if menu == "Dictionnaire":
         
         st.subheader("📖 Dictionnaire")
-        dict_data = get_dictionary(st.session_state.username)     
+
+        col1, col2 = st.columns(2)
         
+        with col1:
+            st.markdown("### 🇮🇹 Italien")
+            for mot, trad in get_dictionary(st.session_state.username, "it"):
+                st.write(f"{mot} → {trad}")
         
-        for mot, trad in dict_data:
-            st.write(f"{mot} : {trad}")
+        with col2:
+            st.markdown("### 🇩🇪 Allemand")
+            for mot, trad in get_dictionary(st.session_state.username, "de"):
+                st.write(f"{mot} → {trad}")
     
     if menu == "Lecture":
         st.title("ReadBetter")
