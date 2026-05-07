@@ -4,3 +4,4 @@ beautifulsoup4
 deep-translator
 nltk
 feedparser
+psycopg2-binary
