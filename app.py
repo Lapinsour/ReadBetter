@@ -73,7 +73,7 @@ def get_stats(user):
     cursor.execute("""
         SELECT date, score
         FROM stats
-        WHERE user = ?
+        WHERE username = %s
         ORDER BY date DESC
     """, (user,))
 
@@ -86,7 +86,7 @@ def get_dictionary(user):
     cursor.execute("""
         SELECT mot, traduction
         FROM dictionnaire
-        WHERE user = ?
+        WHERE username = %s
         ORDER BY LOWER(mot) ASC
     """, (user,))
 
@@ -99,7 +99,7 @@ def has_already_done_quiz(user):
     cursor.execute("""
         SELECT 1
         FROM stats
-        WHERE user = ?
+        WHERE username = %s
         AND date = DATE('now')
         LIMIT 1
     """, (user,))
