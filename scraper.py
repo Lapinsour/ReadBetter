@@ -19,9 +19,10 @@ def insert_article(langue, title, url, content):
     cursor.execute("""
         INSERT INTO articles (langue, titre, contenu, url, date_publication)
         VALUES (%s, %s, %s, %s, %s)
+        RETURNING id
     """, (langue, title, content, url, date.today()))
 
-    article_id = cursor.lastrowid
+    article_id = cursor.fetchone()[0]
 
     conn.commit()
     conn.close()
@@ -38,12 +39,11 @@ def cleanup():
 
     cursor.execute("""
         DELETE FROM articles
-        WHERE date_publication < DATE('now', '-2 day')
+        WHERE date_publication < CURRENT_DATE - INTERVAL '2 days'
     """)
 
     conn.commit()
     conn.close()
-
 
 # -----------------------------
 # VOCAB EXTRACTION
@@ -67,7 +67,6 @@ def translate_words(words, src, tgt):
 
 # -----------------------------
 # VOCAB INSERT
-# -----------------------------
 def insert_vocab(article_id, vocab_list):
     conn = get_connection()
     cursor = conn.cursor()
