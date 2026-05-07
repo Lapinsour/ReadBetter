@@ -32,7 +32,4 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-          git add articles.db
-          git commit -m "Update articles DB" || echo "No changes"
-
-          git push origin main
+          
