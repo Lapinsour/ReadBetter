@@ -1,28 +1,25 @@
-import sqlite3
+import psycopg2
+import streamlit as st
 
-DB_PATH = "articles.db"
 
-
-# -----------------------------
-# Connexion
-# -----------------------------
 def get_connection():
-    return sqlite3.connect(DB_PATH)
+    return psycopg2.connect(
+        host=st.secrets["DB_HOST"],
+        database=st.secrets["DB_NAME"],
+        user=st.secrets["DB_USER"],
+        password=st.secrets["DB_PASSWORD"],
+        port=st.secrets["DB_PORT"]
+    )
 
 
-# -----------------------------
-# Init DB complète
-# -----------------------------
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
 
-    # -------------------------
     # ARTICLES
-    # -------------------------
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS articles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             langue TEXT,
             titre TEXT,
             contenu TEXT,
@@ -31,38 +28,31 @@ def init_db():
         )
     """)
 
-    # -------------------------
-    # VOCABULAIRE (10 mots / article)
-    # -------------------------
+    # VOCABULAIRE
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS vocabulaire (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            article_id INTEGER,
+            id SERIAL PRIMARY KEY,
+            article_id INTEGER REFERENCES articles(id),
             mot TEXT,
-            traduction TEXT,
-            FOREIGN KEY(article_id) REFERENCES articles(id)
+            traduction TEXT
         )
     """)
 
-    # -------------------------
-    # STATS utilisateur
-    # -------------------------
+    # STATS
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stats (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user TEXT,
+            id SERIAL PRIMARY KEY,
+            username TEXT,
             date DATE,
             score INTEGER
         )
     """)
 
-    # -------------------------
-    # DICTIONNAIRE utilisateur
-    # -------------------------
+    # DICTIONNAIRE
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS dictionnaire (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user TEXT,
+            id SERIAL PRIMARY KEY,
+            username TEXT,
             date DATE,
             mot TEXT,
             traduction TEXT
