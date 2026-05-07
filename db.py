@@ -2,13 +2,11 @@ import psycopg2
 import os
 import streamlit as st
 
-
-
-
 def get_connection():
 
     # ---- STREAMLIT CLOUD ----
-    if "DB_HOST" in os.environ is False:
+    if not os.getenv("DB_HOST"):
+
         import streamlit as st
 
         return psycopg2.connect(
