@@ -5,3 +5,5 @@ deep-translator
 nltk
 feedparser
 psycopg2-binary
+matplotlib
+pandas
