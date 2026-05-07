@@ -39,14 +39,14 @@ def get_vocab(article_id):
     conn.close()
     return rows
 
-def save_stats(username, score):
+def save_stats(username, langue, score):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO stats (username, date, score)
-        VALUES (%s, CURRENT_DATE, %s)
-    """, (st.session_state.username, score))
+        INSERT INTO stats (username, langue, date, score)
+        VALUES (%s, %s, CURRENT_DATE, %s)
+    """, (username, langue, score))
 
     conn.commit()
     conn.close()
@@ -92,7 +92,7 @@ def get_dictionary(username):
 
     return cursor.fetchall()
 
-def has_already_done_quiz(username):
+def has_already_done_quiz(username, langue):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -100,14 +100,12 @@ def has_already_done_quiz(username):
         SELECT 1
         FROM stats
         WHERE username = %s
-        AND date = CURRENT_DATE
+          AND langue = %s
+          AND date = CURRENT_DATE
         LIMIT 1
-    """, (username,))
+    """, (username, langue))
 
-    result = cursor.fetchone()
-    conn.close()
-
-    return result is not None
+    return cursor.fetchone() is not None
 
 # -----------------------------
 # Utils
