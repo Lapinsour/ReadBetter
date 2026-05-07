@@ -18,7 +18,7 @@ def insert_article(langue, title, url, content):
 
     cursor.execute("""
         INSERT INTO articles (langue, titre, contenu, url, date_publication)
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
     """, (langue, title, content, url, date.today()))
 
     article_id = cursor.lastrowid
@@ -75,7 +75,7 @@ def insert_vocab(article_id, vocab_list):
     for mot, trad in vocab_list:
         cursor.execute("""
             INSERT INTO vocabulaire (article_id, mot, traduction)
-            VALUES (?, ?, ?)
+            VALUES (%s, %s, %s)
         """, (article_id, mot, trad))
 
     conn.commit()
