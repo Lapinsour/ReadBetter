@@ -45,7 +45,7 @@ def save_stats(username, score):
 
     cursor.execute("""
         INSERT INTO stats (username, date, score)
-        VALUES (%s, DATE('now'), %s)
+        VALUES (%s, CURRENT_DATE, %s)
     """, (st.session_state.username, score))
 
     conn.commit()
@@ -59,7 +59,7 @@ def save_dictionary(username, vocab):
     for mot, trad in vocab:
         cursor.execute("""
             INSERT INTO dictionnaire (username, date, mot, traduction)
-            VALUES (%s, DATE('now'), %s, %s)
+            VALUES (%s, CURRENT_DATE, %s, %s)
         """, (st.session_state.username, mot, trad))
 
     conn.commit()
