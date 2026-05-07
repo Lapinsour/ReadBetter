@@ -301,4 +301,4 @@ if st.session_state.username:
             st.success(f"Score : {score}/10")
     
             save_stats(st.session_state.username, langue, score)
-            save_dictionary(st.session_state.username, vocab)
+            save_dictionary(st.session_state.username,langue, vocab)
