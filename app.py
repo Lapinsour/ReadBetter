@@ -3,6 +3,8 @@ import sqlite3
 import re
 from deep_translator import GoogleTranslator
 from db import get_connection
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # -----------------------------
@@ -164,20 +166,42 @@ if st.session_state.username:
         st.rerun()
     
     if menu == "Progression":
-    
-        col1, col2 = st.columns(2)
 
+        col1, col2 = st.columns(2)
+    
         with col1:
             st.markdown("### 🇮🇹 Italien")
+    
             stats_it = get_stats(st.session_state.username, "it")
-            for d, s in stats_it:
-                st.write(f"{d} → {s}/10")
-        
+            df_it = pd.DataFrame(stats_it, columns=["date", "score"])
+            if not df_it.empty:
+                df_it["date"] = pd.to_datetime(df_it["date"])
+                df_it = df_it.sort_values("date")
+    
+                fig_it, ax_it = plt.subplots()
+                ax_it.plot(df_it["date"], df_it["score"], marker="o")
+                ax_it.set_ylim(0, 10)
+                ax_it.set_title("Progression Italien")
+                st.pyplot(fig_it)
+            else:
+                st.info("Aucune donnée")
+    
         with col2:
             st.markdown("### 🇩🇪 Allemand")
+    
             stats_de = get_stats(st.session_state.username, "de")
-            for d, s in stats_de:
-                st.write(f"{d} → {s}/10")
+            df_de = pd.DataFrame(stats_de, columns=["date", "score"])
+            if not df_de.empty:
+                df_de["date"] = pd.to_datetime(df_de["date"])
+                df_de = df_de.sort_values("date")
+    
+                fig_de, ax_de = plt.subplots()
+                ax_de.plot(df_de["date"], df_de["score"], marker="o")
+                ax_de.set_ylim(0, 10)
+                ax_de.set_title("Progression Allemand")
+                st.pyplot(fig_de)
+            else:
+                st.info("Aucune donnée")
     
     if menu == "Dictionnaire":
         
