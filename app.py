@@ -248,6 +248,12 @@ if st.session_state.username:
     if menu == "Quiz":
 
         st.subheader("📚 Vocabulaire du jour")
+
+        langue = st.session_state.get("langue", None)
+
+        if not langue:
+            st.warning("Sélectionne un article d'abord.")
+            st.stop()
     
         if has_already_done_quiz(st.session_state.username, langue):
             st.info("✔️ Quiz déjà complété aujourd’hui.")
