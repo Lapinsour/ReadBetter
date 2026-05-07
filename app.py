@@ -99,8 +99,8 @@ def has_already_done_quiz(username):
     cursor.execute("""
         SELECT 1
         FROM stats
-        WHERE usernamename = %s
-        AND date = DATE('now')
+        WHERE username = %s
+        AND date = CURRENT_DATE
         LIMIT 1
     """, (username,))
 
@@ -108,7 +108,6 @@ def has_already_done_quiz(username):
     conn.close()
 
     return result is not None
-
 
 # -----------------------------
 # Utils
