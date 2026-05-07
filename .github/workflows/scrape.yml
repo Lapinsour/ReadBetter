@@ -33,5 +33,6 @@ jobs:
       - name: Run scraper
         run: python scraper.py
 
-      - name: Debug env
-        run: echo "$DB_HOST"
+      - name: Check secrets
+        run: |
+          python -c "import os; print(os.getenv('DB_HOST'))"
