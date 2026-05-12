@@ -2,7 +2,7 @@ import streamlit as st
 import sqlite3
 import re
 from deep_translator import GoogleTranslator
-from db import init_connection
+from db import get_connection
 import pandas as pd
 
 
@@ -14,7 +14,7 @@ import pandas as pd
 
 
 def get_articles(langue):
-    conn = init_connection()
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -31,7 +31,7 @@ def get_articles(langue):
 
 
 def get_vocab(article_id):
-    conn = init_connection()
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -45,7 +45,7 @@ def get_vocab(article_id):
     return rows
 
 def save_stats(username, langue, score):
-    conn = init_connection()
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -58,7 +58,7 @@ def save_stats(username, langue, score):
 
 
 def save_dictionary(username, langue, vocab):
-    conn = init_connection()
+    conn = get_connection()
     cursor = conn.cursor()
 
     for mot, trad in vocab:
@@ -73,7 +73,7 @@ def save_dictionary(username, langue, vocab):
 
 
 def get_stats(username, langue):
-    conn = init_connection()
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -87,7 +87,7 @@ def get_stats(username, langue):
 
 
 def get_dictionary(username, langue):
-    conn = init_connection()
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -102,7 +102,7 @@ def get_dictionary(username, langue):
     return rows
 
 def has_already_done_quiz(username, langue):
-    conn = init_connection()
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
