@@ -25,7 +25,7 @@ def get_articles(langue):
     """, (langue,))
 
     rows = cursor.fetchall()
-    conn.close()
+    
 
     return rows
 
@@ -41,7 +41,7 @@ def get_vocab(article_id):
     """, (article_id,))
 
     rows = cursor.fetchall()
-    conn.close()
+    
     return rows
 
 def save_stats(username, langue, score):
@@ -54,7 +54,7 @@ def save_stats(username, langue, score):
     """, (username, langue, score))
 
     conn.commit()
-    conn.close()
+    
 
 
 def save_dictionary(username, langue, vocab):
@@ -69,7 +69,7 @@ def save_dictionary(username, langue, vocab):
         """, (username, langue, mot, trad))
 
     conn.commit()
-    conn.close()
+    
 
 
 def get_stats(username, langue):
@@ -98,7 +98,7 @@ def get_dictionary(username, langue):
     """, (username, langue))
 
     rows = cursor.fetchall()
-    conn.close()
+    
     return rows
 
 def has_already_done_quiz(username, langue):
