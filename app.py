@@ -12,7 +12,7 @@ import pandas as pd
 
 
 
-@st.cache_data(ttl=3600)
+
 def get_articles(langue):
     conn = init_connection()
     cursor = conn.cursor()
@@ -29,7 +29,7 @@ def get_articles(langue):
 
     return rows
 
-@st.cache_data(ttl=3600)
+
 def get_vocab(article_id):
     conn = init_connection()
     cursor = conn.cursor()
@@ -71,7 +71,7 @@ def save_dictionary(username, langue, vocab):
     conn.commit()
     conn.close()
 
-@st.cache_data(ttl=300)
+
 def get_stats(username, langue):
     conn = init_connection()
     cursor = conn.cursor()
@@ -85,7 +85,6 @@ def get_stats(username, langue):
 
     return cursor.fetchall()
 
-    return cursor.fetchall()
 
 def get_dictionary(username, langue):
     conn = init_connection()
@@ -124,7 +123,7 @@ def split_into_sentences(text):
     return re.split(r'(?<=[.!?]) +', text)
 
 
-@st.cache_data
+@st.cache_data(show_spinner=False, ttl=86400)
 def translate(text, src, tgt):
     return GoogleTranslator(
         source=src,
@@ -198,7 +197,7 @@ if st.session_state.username:
         with col2:
             st.markdown("###  Allemand")
     
-            stats_it = get_stats(st.session_state.username, "de")
+            stats_de = get_stats(st.session_state.username, "de")
     
             df_de = pd.DataFrame(
                 stats_de,
