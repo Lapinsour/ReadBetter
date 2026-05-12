@@ -37,6 +37,17 @@ def cleanup():
     conn = get_connection()
     cursor = conn.cursor()
 
+    # Supprimer d'abord le vocabulaire lié
+    cursor.execute("""
+        DELETE FROM vocabulaire
+        WHERE article_id IN (
+            SELECT id
+            FROM articles
+            WHERE date_publication < CURRENT_DATE - INTERVAL '2 days'
+        )
+    """)
+
+    # Puis supprimer les articles
     cursor.execute("""
         DELETE FROM articles
         WHERE date_publication < CURRENT_DATE - INTERVAL '2 days'
