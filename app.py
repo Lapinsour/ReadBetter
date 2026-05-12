@@ -3,13 +3,14 @@ import sqlite3
 import re
 from deep_translator import GoogleTranslator
 from db import get_connection
-import matplotlib.pyplot as plt
+
 import pandas as pd
 
 
 # -----------------------------
 # DB
 # -----------------------------
+@st.cache_data(ttl=3600)
 def get_articles(langue):
     conn = get_connection()
     cursor = conn.cursor()
@@ -26,7 +27,7 @@ def get_articles(langue):
 
     return rows
 
-
+@st.cache_data(ttl=3600)
 def get_vocab(article_id):
     conn = get_connection()
     cursor = conn.cursor()
@@ -68,7 +69,7 @@ def save_dictionary(username, langue, vocab):
     conn.commit()
     conn.close()
 
-
+@st.cache_data(ttl=300)
 def get_stats(username, langue):
     conn = get_connection()
     cursor = conn.cursor()
@@ -173,35 +174,46 @@ if st.session_state.username:
             st.markdown("### 🇮🇹 Italien")
     
             stats_it = get_stats(st.session_state.username, "it")
-            df_it = pd.DataFrame(stats_it, columns=["date", "score"])
+    
+            df_it = pd.DataFrame(
+                stats_it,
+                columns=["date", "score"]
+            )
+    
             if not df_it.empty:
                 df_it["date"] = pd.to_datetime(df_it["date"])
                 df_it = df_it.sort_values("date")
+                df_it = df_it.set_index("date")
     
-                fig_it, ax_it = plt.subplots()
-                ax_it.plot(df_it["date"], df_it["score"], marker="o")
-                ax_it.set_ylim(0, 10)
-                ax_it.set_title("Progression Italien")
-                st.pyplot(fig_it)
+                st.line_chart(df_it["score"])
+    
             else:
                 st.info("Aucune donnée")
+        
+
     
+
         with col2:
-            st.markdown("### 🇩🇪 Allemand")
+            st.markdown("###  Allemand")
     
-            stats_de = get_stats(st.session_state.username, "de")
-            df_de = pd.DataFrame(stats_de, columns=["date", "score"])
+            stats_it = get_stats(st.session_state.username, "de")
+    
+            df_de = pd.DataFrame(
+                stats_de,
+                columns=["date", "score"]
+            )
+    
             if not df_de.empty:
                 df_de["date"] = pd.to_datetime(df_de["date"])
                 df_de = df_de.sort_values("date")
+                df_de = df_de.set_index("date")
     
-                fig_de, ax_de = plt.subplots()
-                ax_de.plot(df_de["date"], df_de["score"], marker="o")
-                ax_de.set_ylim(0, 10)
-                ax_de.set_title("Progression Allemand")
-                st.pyplot(fig_de)
+                st.line_chart(df_de["score"])
+    
             else:
                 st.info("Aucune donnée")
+
+
     
     if menu == "Dictionnaire":
         
@@ -247,7 +259,9 @@ if st.session_state.username:
             if len(articles) > idx:
         
                 article_id, title, content, url, date_pub = articles[idx]
-                st.session_state.vocab = get_vocab(article_id)
+                if "vocab_article_id" not in st.session_state or st.session_state.vocab_article_id != article_id:
+                    st.session_state.vocab = get_vocab(article_id)
+                    st.session_state.vocab_article_id = article_id
                 st.session_state.langue = langue
                 st.header(title)
                 st.markdown(f"[Lire l'article]({url})")
