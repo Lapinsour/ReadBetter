@@ -2,12 +2,15 @@ import psycopg2
 import os
 import streamlit as st
 
+
+# -----------------------------
+# Connexion unique réutilisable
+# -----------------------------
+@st.cache_resource
 def get_connection():
 
     # ---- STREAMLIT CLOUD ----
     if not os.getenv("DB_HOST"):
-
-        import streamlit as st
 
         return psycopg2.connect(
             host=st.secrets["DB_HOST"],
@@ -26,7 +29,12 @@ def get_connection():
         port=os.environ["DB_PORT"]
     )
 
+
+# -----------------------------
+# Init DB
+# -----------------------------
 def init_db():
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -46,7 +54,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS vocabulaire (
             id SERIAL PRIMARY KEY,
-            article_id INTEGER REFERENCES articles(id),
+            article_id INTEGER REFERENCES articles(id) ON DELETE CASCADE,
             mot TEXT,
             traduction TEXT
         )
@@ -57,9 +65,9 @@ def init_db():
         CREATE TABLE IF NOT EXISTS stats (
             id SERIAL PRIMARY KEY,
             username TEXT,
+            langue TEXT,
             date DATE,
-            score INTEGER,
-            langue TEXT
+            score INTEGER
         )
     """)
 
@@ -77,4 +85,3 @@ def init_db():
     """)
 
     conn.commit()
-    conn.close()
