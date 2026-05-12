@@ -6,7 +6,7 @@ import streamlit as st
 # -----------------------------
 # Connexion unique réutilisable
 # -----------------------------
-@st.cache_resource
+
 def get_connection():
 
     # ---- STREAMLIT CLOUD ----
